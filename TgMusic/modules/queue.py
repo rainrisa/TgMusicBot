@@ -33,6 +33,13 @@ async def queue_info(_: Client, msg: types.Message) -> None:
         return
 
     current_song = _queue[0]
+    total_duration = sum(
+        song.duration for song in _queue
+    )  # Calculate the total duration of all tracks
+    remaining_duration = current_song.duration - await call.played_time(
+        chat.id
+    )  # Remaining time for the current song
+
     text = [
         f"<b>🎧 Queue for {chat.title}</b>",
         "",
@@ -42,6 +49,7 @@ async def queue_info(_: Client, msg: types.Message) -> None:
         f"├ <b>Duration:</b> {sec_to_min(current_song.duration)} min",
         f"├ <b>Loop:</b> {'🔁 On' if current_song.loop else '➡️ Off'}",
         f"└ <b>Progress:</b> {sec_to_min(await call.played_time(chat.id))} min",
+        f"├ <b>Remaining:</b> {sec_to_min(remaining_duration)} min",  # Display remaining time
     ]
 
     if len(_queue) > 1:
@@ -53,7 +61,10 @@ async def queue_info(_: Client, msg: types.Message) -> None:
         if len(_queue) > 15:
             text.append(f"...and {len(_queue) - 15} more")
 
-    text.append(f"\n<b>📊 Total:</b> {len(_queue)} track(s) in queue")
+    # Display the total duration of the queue
+    text.append(
+        f"\n<b>📊 Total:</b> {len(_queue)} track(s) in queue | <b>Total Duration:</b> {sec_to_min(total_duration)} min"
+    )
 
     # Handle message length limit
     formatted_text = "\n".join(text)
@@ -66,7 +77,7 @@ async def queue_info(_: Client, msg: types.Message) -> None:
                 f"├ <code>{current_song.name[:45]}</code>",
                 f"└ {sec_to_min(await call.played_time(chat.id))}/{sec_to_min(current_song.duration)} min",
                 "",
-                f"<b>📊 Total:</b> {len(_queue)} track(s) in queue",
+                f"<b>📊 Total:</b> {len(_queue)} track(s) in queue | <b>Total Duration:</b> {sec_to_min(total_duration)} min",
             ]
         )
 
