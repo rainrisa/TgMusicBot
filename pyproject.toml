@@ -45,6 +45,7 @@ dependencies = [
     "pytdbot[tdjson]>=0.9.7",
     "pytgcrypto>=1.2.11",
     "python-dotenv>=1.2.1",
+    "ruff>=0.14.8",
     "ujson>=5.11.0",
     "yt-dlp>=2025.11.12",
 ]
