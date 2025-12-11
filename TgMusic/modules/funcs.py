@@ -34,7 +34,7 @@ async def set_play_type(_: Client, msg: types.Message) -> None:
 
 
 async def is_admin_or_reply(
-        msg: types.Message,
+    msg: types.Message,
 ) -> Union[int, types.Message, types.Error]:
     """Verify admin status and active playback session."""
     chat_id = msg.chat_id
@@ -46,7 +46,7 @@ async def is_admin_or_reply(
 
 
 async def handle_playback_action(
-        c: Client, msg: types.Message, action, success_msg: str, fail_msg: str
+    c: Client, msg: types.Message, action, success_msg: str, fail_msg: str
 ) -> None:
     """Handle common playback control operations."""
     _chat_id = await is_admin_or_reply(msg)
@@ -62,7 +62,7 @@ async def handle_playback_action(
         await msg.reply_text(f"⚠️ {fail_msg}\n<code>{result.message}</code>")
         return
 
-    await msg.reply_text(f"{success_msg}\n" f"└ Requested by: {await msg.mention()}")
+    await msg.reply_text(f"{success_msg}\n└ Requested by: {await msg.mention()}")
 
 
 @Client.on_message(filters=Filter.command("pause"))

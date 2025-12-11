@@ -103,7 +103,7 @@ class Calls:
             return types.Error(
                 code=500,
                 message="Client session not initialized properly. "
-                        "Please report this issue.",
+                "Please report this issue.",
             )
 
         if ub.me.is_bot:
@@ -114,7 +114,7 @@ class Calls:
         return ub
 
     async def start_client(
-            self, api_id: int, api_hash: str, session_string: str
+        self, api_id: int, api_hash: str, session_string: str
     ) -> None:
         """Start a new pyrogram client session.
 
@@ -171,13 +171,16 @@ class Calls:
                     elif isinstance(update, UpdatedGroupCallParticipant):
                         return
                     elif isinstance(update, ChatUpdate) and (
-                            update.status.KICKED or update.status.LEFT_GROUP
+                        update.status.KICKED or update.status.LEFT_GROUP
                     ):
                         LOGGER.debug(
                             "Cleaning up chat %s after leaving", update.chat_id
                         )
                         chat_cache.clear_chat(update.chat_id)
-                    elif isinstance(update, ChatUpdate) and update.status.CLOSED_VOICE_CHAT:
+                    elif (
+                        isinstance(update, ChatUpdate)
+                        and update.status.CLOSED_VOICE_CHAT
+                    ):
                         LOGGER.debug(
                             "Cleaning up chat %s after leaving", update.chat_id
                         )
@@ -187,11 +190,11 @@ class Calls:
                     LOGGER.error("Error in general handler: %s", e, exc_info=True)
 
     async def play_media(
-            self,
-            chat_id: int,
-            file_path: Union[str, Path],
-            video: bool = False,
-            ffmpeg_parameters: Optional[str] = None,
+        self,
+        chat_id: int,
+        file_path: Union[str, Path],
+        video: bool = False,
+        ffmpeg_parameters: Optional[str] = None,
     ) -> Union[types.Ok, types.Error]:
         """Play media in a voice chat.
 
@@ -254,7 +257,7 @@ class Calls:
             return types.Error(
                 code=404,
                 message="No active voice chat found.\n\n"
-                        "Please start a voice chat and try again.",
+                "Please start a voice chat and try again.",
             )
         except ntgcalls.ConnectionError as e:
             LOGGER.error("Connection error during playback: %s", e)
@@ -331,7 +334,7 @@ class Calls:
             file_path = song.file_path or await self.song_download(song)
             if not file_path:
                 await reply.edit_text(
-                    "⚠️ Failed to download the song.\n" "Skipping to next track..."
+                    "⚠️ Failed to download the song.\nSkipping to next track..."
                 )
                 await self.play_next(chat_id)
                 return
@@ -450,11 +453,11 @@ class Calls:
             try:
                 await client.leave_call(chat_id)
             except (
-                    exceptions.NotInCallError,
-                    errors.GroupCallInvalid,
-                    exceptions.NoActiveGroupCall,
-                    ConnectionNotFound,
-                    errors.GroupcallForbidden
+                exceptions.NotInCallError,
+                errors.GroupCallInvalid,
+                exceptions.NoActiveGroupCall,
+                ConnectionNotFound,
+                errors.GroupcallForbidden,
             ):
                 pass  # Already not in call
 
@@ -466,12 +469,12 @@ class Calls:
             return types.Error(code=500, message=f"Failed to end call: {str(e)}")
 
     async def seek_stream(
-            self,
-            chat_id: int,
-            file_path_or_url: Union[str, Path],
-            to_seek: int,
-            duration: int,
-            is_video: bool,
+        self,
+        chat_id: int,
+        file_path_or_url: Union[str, Path],
+        to_seek: int,
+        duration: int,
+        is_video: bool,
     ) -> Union[types.Ok, types.Error]:
         """Seek to a position in the current stream.
 
@@ -489,7 +492,7 @@ class Calls:
             return types.Error(
                 code=400,
                 message="Invalid seek position or duration.\n"
-                        "Position must be positive and duration must be greater than 0.",
+                "Position must be positive and duration must be greater than 0.",
             )
 
         try:
@@ -508,7 +511,7 @@ class Calls:
             return types.Error(code=500, message=f"Seek operation failed: {str(e)}")
 
     async def speed_change(
-            self, chat_id: int, speed: float = 1.0
+        self, chat_id: int, speed: float = 1.0
     ) -> Union[types.Ok, types.Error]:
         """Change playback speed.
 
@@ -521,7 +524,7 @@ class Calls:
         """
         if not 0.5 <= speed <= 4.0:
             return types.Error(
-                code=400, message="Invalid speed value.\n" "Must be between 0.5 and 4.0"
+                code=400, message="Invalid speed value.\nMust be between 0.5 and 4.0"
             )
 
         curr_song = chat_cache.get_playing_track(chat_id)
@@ -533,12 +536,12 @@ class Calls:
             curr_song.file_path,
             curr_song.is_video,
             ffmpeg_parameters=(
-                f"-atend -filter:v setpts=0.5*PTS " f"-filter:a atempo={speed}"
+                f"-atend -filter:v setpts=0.5*PTS -filter:a atempo={speed}"
             ),
         )
 
     async def change_volume(
-            self, chat_id: int, volume: int
+        self, chat_id: int, volume: int
     ) -> Union[None, types.Error]:
         """Change playback volume.
 
@@ -736,7 +739,7 @@ class Calls:
             return types.Error(code=500, message=f"Failed to get stats: {str(e)}")
 
     async def check_user_status(
-            self, chat_id: int
+        self, chat_id: int
     ) -> Union[ChatMemberStatusResult, types.Error]:
         client = await self.get_client(chat_id)
         if isinstance(client, types.Error):

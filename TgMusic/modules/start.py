@@ -149,8 +149,10 @@ async def callback_query_help(c: Client, message: types.UpdateNewCallbackQuery) 
         await message.answer("🏠 Returning to home...")
         user = await c.getUser(message.sender_user_id)
 
-        result = await message.edit_message_caption(START_TEXT.format(user.first_name, c.me.first_name),
-                                                    reply_markup=add_me_markup(c.me.usernames.editable_username))
+        result = await message.edit_message_caption(
+            START_TEXT.format(user.first_name, c.me.first_name),
+            reply_markup=add_me_markup(c.me.usernames.editable_username),
+        )
         if isinstance(result, types.Error):
             c.logger.error(f"Edit failed: {result.message}")
         return None
@@ -159,7 +161,9 @@ async def callback_query_help(c: Client, message: types.UpdateNewCallbackQuery) 
         await message.answer(f"📖 {category['title']}")
         text = f"<b>{category['title']}</b>\n\n{category['content']}\n\n🔙 <i>Use the buttons below to go back.</i>"
 
-        result = await message.edit_message_caption(text, reply_markup=category["markup"])
+        result = await message.edit_message_caption(
+            text, reply_markup=category["markup"]
+        )
         if isinstance(result, types.Error):
             c.logger.error(f"Edit failed: {result.message}")
         return None

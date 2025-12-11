@@ -152,11 +152,7 @@ class JiosaavnData(MusicService):
             return types.Error(code=400, message="No track identifier provided")
 
         # Normalize URL format
-        url = (
-            self.query
-            if self.is_valid()
-            else self.format_jiosaavn_url(self.query)
-        )
+        url = self.query if self.is_valid() else self.format_jiosaavn_url(self.query)
 
         data = await self.get_track_data(url)
         if not data or not data.get("results"):
@@ -222,7 +218,7 @@ class JiosaavnData(MusicService):
         return None
 
     async def download_track(
-            self, track: TrackInfo, video: bool = False
+        self, track: TrackInfo, video: bool = False
     ) -> Union[Path, types.Error]:
         """Download audio track from JioSaavn.
 
@@ -308,7 +304,7 @@ class JiosaavnData(MusicService):
 
     @staticmethod
     def _create_platform_tracks(
-            data: dict[str, Any],
+        data: dict[str, Any],
     ) -> Union[PlatformTracks, types.Error]:
         """Create PlatformTracks object from raw API data.
 

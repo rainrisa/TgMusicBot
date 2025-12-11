@@ -12,7 +12,9 @@ from ..core import DownloaderWrapper
 
 
 @Client.on_updateNewCallbackQuery(filters=Filter.regex(r"vcplay_\w+"))
-async def callback_query_vc_play(c: Client, message: types.UpdateNewCallbackQuery) -> None:
+async def callback_query_vc_play(
+    c: Client, message: types.UpdateNewCallbackQuery
+) -> None:
     data = message.payload.data.decode()
     chat_id = message.chat_id
 
@@ -99,7 +101,7 @@ async def callback_query(c: Client, message: types.UpdateNewCallbackQuery) -> No
         }
 
     async def send_response(
-            msg: str, alert: bool = False, delete: bool = False, reply_markup=None
+        msg: str, alert: bool = False, delete: bool = False, reply_markup=None
     ) -> None:
         """Helper function to send standardized responses."""
         if alert:

@@ -70,27 +70,56 @@ async def meval(code, globs, **kwargs):
 
     if not any(isinstance(node, ast.Return) for node in code):
         for i in range(len(code)):
-            if isinstance(code[i], ast.Expr) and (i == len(code) - 1 or not isinstance(code[i].value, ast.Call)):
-                code[i] = ast.copy_location(ast.Expr(ast.Call(func=ast.Attribute(value=ast.Name(id=ret_name,
-                                                                                                ctx=ast.Load()),
-                                                                                 attr="append", ctx=ast.Load()),
-                                                              args=[code[i].value], keywords=[])), code[-1])
+            if isinstance(code[i], ast.Expr) and (
+                i == len(code) - 1 or not isinstance(code[i].value, ast.Call)
+            ):
+                code[i] = ast.copy_location(
+                    ast.Expr(
+                        ast.Call(
+                            func=ast.Attribute(
+                                value=ast.Name(id=ret_name, ctx=ast.Load()),
+                                attr="append",
+                                ctx=ast.Load(),
+                            ),
+                            args=[code[i].value],
+                            keywords=[],
+                        )
+                    ),
+                    code[-1],
+                )
     else:
         for node in code:
             if isinstance(node, ast.Return):
                 node.value = ast.List(elts=[node.value], ctx=ast.Load())
 
-    code.append(ast.copy_location(ast.Return(value=ast.Name(id=ret_name, ctx=ast.Load())), code[-1]))
+    code.append(
+        ast.copy_location(
+            ast.Return(value=ast.Name(id=ret_name, ctx=ast.Load())), code[-1]
+        )
+    )
 
     # globals().update(**<global_args>)
-    glob_copy = ast.Expr(ast.Call(func=ast.Attribute(value=ast.Call(func=ast.Name(id="globals", ctx=ast.Load()),
-                                                                    args=[], keywords=[]),
-                                                     attr="update", ctx=ast.Load()),
-                                  args=[], keywords=[ast.keyword(arg=None,
-                                                                 value=ast.Name(id=global_args, ctx=ast.Load()))]))
+    glob_copy = ast.Expr(
+        ast.Call(
+            func=ast.Attribute(
+                value=ast.Call(
+                    func=ast.Name(id="globals", ctx=ast.Load()), args=[], keywords=[]
+                ),
+                attr="update",
+                ctx=ast.Load(),
+            ),
+            args=[],
+            keywords=[
+                ast.keyword(arg=None, value=ast.Name(id=global_args, ctx=ast.Load()))
+            ],
+        )
+    )
     ast.fix_missing_locations(glob_copy)
     code.insert(0, glob_copy)
-    ret_decl = ast.Assign(targets=[ast.Name(id=ret_name, ctx=ast.Store())], value=ast.List(elts=[], ctx=ast.Load()))
+    ret_decl = ast.Assign(
+        targets=[ast.Name(id=ret_name, ctx=ast.Store())],
+        value=ast.List(elts=[], ctx=ast.Load()),
+    )
     ast.fix_missing_locations(ret_decl)
     code.insert(1, ret_decl)
     args = []
@@ -106,7 +135,9 @@ async def meval(code, globs, **kwargs):
         kw_defaults=[None for _ in range(len(args))],
     )
     args.posonlyargs = []
-    fun = ast.AsyncFunctionDef(name="tmp", args=args, body=code, decorator_list=[], returns=None)
+    fun = ast.AsyncFunctionDef(
+        name="tmp", args=args, body=code, decorator_list=[], returns=None
+    )
     ast.fix_missing_locations(fun)
     mod = ast.parse("")
     mod.body = [fun]
@@ -132,7 +163,7 @@ async def meval(code, globs, **kwargs):
 
 
 def format_exception(
-        exp: BaseException, tb: Optional[list[traceback.FrameSummary]] = None
+    exp: BaseException, tb: Optional[list[traceback.FrameSummary]] = None
 ) -> str:
     """
     Formats an exception traceback as a string, similar to the Python interpreter.
@@ -173,7 +204,7 @@ async def exec_eval(c: Client, m: types.Message) -> None:
 
     async def _eval() -> Tuple[str, Optional[str]]:
         async def send(
-                *args: Any, **kwargs: Any
+            *args: Any, **kwargs: Any
         ) -> Union["types.Error", "types.Message"]:
             return await m.reply_text(*args, **kwargs)
 
@@ -357,16 +388,16 @@ async def sys_stats(client: Client, message: types.Message) -> None:
   • <b>MAC Address:</b> <code>{mac_address}</code>
 
 <b>💾 Memory:</b>
-  • <b>RAM:</b> <code>{ram.used / (1024 ** 3):.2f} GiB / {ram.total / (1024 ** 3):.2f} GiB ({ram.percent}%)</code>
+  • <b>RAM:</b> <code>{ram.used / (1024**3):.2f} GiB / {ram.total / (1024**3):.2f} GiB ({ram.percent}%)</code>
 
 <b>🔧 CPU:</b>
   • <b>Cores:</b> <code>{cores_physical} physical, {cores_total} logical</code>
   • <b>Frequency:</b> <code>{cpu_freq_str}</code>
 
 <b>💽 Disk:</b>
-  • <b>Total:</b> <code>{disk.total / (1024 ** 3):.2f} GiB</code>
-  • <b>Used:</b> <code>{disk.used / (1024 ** 3):.2f} GiB ({disk.percent}%)</code>
-  • <b>Free:</b> <code>{disk.free / (1024 ** 3):.2f} GiB</code>
+  • <b>Total:</b> <code>{disk.total / (1024**3):.2f} GiB</code>
+  • <b>Used:</b> <code>{disk.used / (1024**3):.2f} GiB ({disk.percent}%)</code>
+  • <b>Free:</b> <code>{disk.free / (1024**3):.2f} GiB</code>
   • <b>IO:</b> <code>Read: {format_bytes(disk_io.read_bytes)}, Write: {format_bytes(disk_io.write_bytes)}</code>
 
 <b>🌐 Network:</b>
