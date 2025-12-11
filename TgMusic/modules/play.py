@@ -18,7 +18,7 @@ from TgMusic.core import (
     control_buttons,
 )
 from TgMusic.core import YouTubeData, DownloaderWrapper, db, call, tg
-from TgMusic.core import admins_only
+from TgMusic.core import admins_only, config
 from TgMusic.core.thumbnails import gen_thumb
 from TgMusic.logger import LOGGER
 from TgMusic.modules.utils import sec_to_min, get_audio_duration
@@ -372,9 +372,9 @@ async def handle_play_command(c: Client, msg: types.Message, is_video: bool = Fa
 
     # Check queue limit
     queue = chat_cache.get_queue(chat_id)
-    if len(queue) > 10:
+    if len(queue) > config.MAX_QUEUE_SIZE:
         return await msg.reply_text(
-            "⚠️ Queue limit reached (10 tracks max). Use /end to clear queue."
+            f"⚠️ Queue limit reached ({config.MAX_QUEUE_SIZE} tracks max). Use /end to clear queue."
         )
 
     reply = await msg.getRepliedMessage() if msg.reply_to_message_id else None
